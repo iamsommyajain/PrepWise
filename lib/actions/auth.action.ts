@@ -12,6 +12,7 @@ export async function signUp(params: SignUpParams) {
             return {success:false, message:'User already exists. Sign in instead'};
         }
         await db.collection('users').doc(uid).set({
+            uid,
             name,
             email,
             createdAt: new Date().toISOString()
@@ -39,8 +40,9 @@ export async function signIn(params: SignInParams) {
         }
         
         await setSessionCookie(idToken);
+        return { success: true, message: 'User signed in successfully' };
     } catch (e: any) {
-        console.error('Error signing up user:', e);
+        console.error('Error signing in user:', e);
 
         return {success:false, message:'Failed to create an account'};
     }
@@ -86,3 +88,9 @@ export async function getCurrentUser(): Promise<User | null> {
         return null;
     }
 }
+
+export async function isAuthenticated() {
+    const user = await getCurrentUser();
+    return !!user;
+}
+
